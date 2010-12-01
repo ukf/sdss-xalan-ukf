@@ -23,9 +23,25 @@ class OrganizationName {
 	
 	static boolean isOrganizationName(Node node)
 	{
-		return node instanceof Element &&
-			node.getNamespaceURI() == "urn:oasis:names:tc:SAML:2.0:metadata" &&
-			node.getLocalName() == "OrganizationName";				
+		// Must be an Element
+		if (!(node instanceof Element)) return false;
+
+		/*
+		 * Representation of an owner name in metadata and in the old schema for
+		 * members.xml is as an md:OrganizationName.
+		 */
+		if ("urn:oasis:names:tc:SAML:2.0:metadata".equals(node.getNamespaceURI()) &&
+				"OrganizationName".equals(node.getLocalName())) return true;
+
+		/*
+		 * Representation of an owner name in the new schema for
+		 * members.xml is as a members:Name.
+		 */
+		if ("http://ukfederation.org.uk/2007/01/members".equals(node.getNamespaceURI()) &&
+				"Name".equals(node.getLocalName())) return true;
+
+		// Otherwise...
+		return false;
 	}
 	
 	String getName()
@@ -43,7 +59,7 @@ class OrganizationName {
 
 	OrganizationName(Node node) {
 		if (!isOrganizationName(node))
-			throw new IllegalArgumentException("expected an OrganizationName element");
+			throw new IllegalArgumentException("expected a members:Name or md:OrganizationName element");
 		this.e = (Element)node;
 	}
 }
@@ -68,6 +84,13 @@ public class Members {
 		}
 	}
 	
+	/**
+	 * Checks whether the provided document node is an XML representation of an
+	 * owner name which is one of those declared in the members.xml document.
+	 * 
+	 * @param node	Metadata document element to check.
+	 * @return
+	 */
 	public boolean isOwnerName(Node node)
 	{
 		if (OrganizationName.isOrganizationName(node)) {
@@ -77,6 +100,15 @@ public class Members {
 		return false;
 	}
 	
+	/**
+	 * Constructs a Members object representing the supplied members.xml document.
+	 * 
+	 * @param node	members.xml as a DOM instance.
+	 * 
+	 * @throws ParserConfigurationException
+	 * @throws SAXException
+	 * @throws IOException
+	 */
 	public Members(Node node) throws ParserConfigurationException, SAXException, IOException
 	{
 		collectOwnerNames(node);
