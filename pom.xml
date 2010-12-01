@@ -4,7 +4,7 @@
   <groupId>uk.ac.sdss</groupId>
   <artifactId>sdss-xalan-ukf</artifactId>
   <packaging>jar</packaging>
-  <version>1.0</version>
+  <version>1.0.1</version>
   <name>sdss-xalan-ukf</name>
   <description>A package of Xalan extensions to assist in processing UK federation SAML metadata.</description>
   <url>http://sdss.ac.uk/</url>
